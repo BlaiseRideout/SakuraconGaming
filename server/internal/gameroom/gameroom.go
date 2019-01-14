@@ -2,9 +2,12 @@ package gameroom
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
+	"reflect"
 
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/pkg/errors"
 )
 
 var (
@@ -19,73 +22,100 @@ func init() {
 	}
 }
 
-const (
-	insertConsoleController = `INSERT INTO ConsoleControllers (ConsoleID, ControllerID) VALUES (?, ?)`
-	insertController        = `INSERT INTO Controllers (Name, Image, Count) VALUES (?, ?, ?)`
-	insertGame              = `INSERT INTO Games (Name, Count) VALUES (?, ?)`
-	insertBarcode           = `INSERT INTO Barcodes (GameID, Barcode) VALUES (?, ?)`
-	insertRental            = `INSERT INTO Rentals (BadgeID, ControllerID, GameID) VALUES (?, ?, ?)`
-	insertTransaction       = `INSERT INTO Transactions (Type, BadgeID, StationID, GameID, controllerID, created) VALUES (?, ?, ?, ?, ?, ?)`
-)
-
-type Station struct {
-	ID        int
-	ConsoleID int
-}
-
-func GetStations() ([]Station, error) {
-	rows, err := db.Query(`SELECT ID, ConsoleID from Stations`)
-	if err != nil {
-		return nil, err
+func ValidateNonZero(v interface{}, path string) error {
+	vs := reflect.ValueOf(v)
+	ts := reflect.TypeOf(v)
+	if reflect.TypeOf(v).Kind() == reflect.Ptr {
+		vs = reflect.ValueOf(v).Elem()
+		ts = reflect.TypeOf(v).Elem()
 	}
-	defer rows.Close()
-	stations := make([]Station, 0)
-	for rows.Next() {
-		var s Station
-		err := rows.Scan(&s.ID, &s.ConsoleID)
-		if err != nil {
-			return nil, err
+
+	for i := 0; i < vs.NumField(); i++ {
+		if configTag := ts.Field(i).Tag.Get("config"); configTag == "optional" {
+			continue
 		}
-		stations = append(stations, s)
+		f := vs.Field(i)
+		tag := ts.Field(i).Tag.Get("json")
+		if tag == "" {
+			continue
+		}
+		// log.Println(path+"."+tag, "value:", f.Interface())
+		name := ts.Field(i).Name
+		var err error
+		switch f.Kind() {
+		case reflect.Int:
+			err = MustInt(name, f.Interface().(int))
+		case reflect.String:
+			err = MustString(name, f.Interface().(string))
+		case reflect.Slice:
+			switch ts.Field(i).Type.Elem().Kind() {
+			case reflect.String:
+				err = MustListString(name, f.Interface().([]string))
+			default:
+				return fmt.Errorf("UNHANDLED SLICE TYPE: %s at %s.%s",
+					ts.Field(i).Type.Elem().Kind(),
+					path,
+					tag)
+			}
+		case reflect.Struct:
+			err = ValidateNonZero(f.Interface(), path+"."+tag)
+			// Return early since we already wrapped the error at the lowest level
+			if err != nil {
+				return err
+			}
+		case reflect.Ptr:
+			if f.IsNil() {
+				return fmt.Errorf("%s.%s missing from config", path, tag)
+			}
+			err = ValidateNonZero(f.Interface(), path+"."+tag)
+			// Return early since we already wrapped the error at the lowest level
+			if err != nil {
+				return err
+			}
+		case reflect.Map:
+			for _, k := range f.MapKeys() {
+				err = ValidateNonZero(f.MapIndex(k).Interface(), path+"."+tag+"."+k.String())
+				if err != nil {
+					return err
+				}
+			}
+		default:
+			return fmt.Errorf("UNHANDLED TYPE: %s at %s.%s", f.Kind(), path, tag)
+		}
+		if err != nil {
+			return errors.Wrap(err, "At key: "+path+"."+tag)
+		}
 	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return stations, nil
+
+	return nil
 }
 
-func CreateStation(consoleID int) error {
-	_, err := db.Exec(`INSERT INTO Stations (ConsoleID) VALUES (?)`, consoleID)
-	if err != nil {
-		return err
+// MustString ensures that a string is not empty.
+func MustString(key, val string) error {
+	if val == "" {
+		return fmt.Errorf("key %q is empty", key)
 	}
 	return nil
 }
 
-func DeleteStation(ID int) error {
-	_, err := db.Exec(`DELETE FROM Stations where ID = ?`, ID)
-	if err != nil {
-		return err
+// MustListString ensures that a list of string values has a length of greater
+// than zero, and ensures that each value is not an empty string.
+func MustListString(key string, vals []string) error {
+	if len(vals) == 0 {
+		return fmt.Errorf("list of values %q has zero length", key)
+	}
+	for _, val := range vals {
+		if err := MustString(key, val); err != nil {
+			return err
+		}
 	}
 	return nil
 }
 
-func CreateConsole(name, imagePath string) error {
-	_, err := db.Exec(`INSERT INTO Consoles (Name, Image) VALUES (?, ?)`, name, imagePath)
-	if err != nil {
-		return err
+// MustInt ensures that a value is not zero.
+func MustInt(key string, val int) error {
+	if val == 0 {
+		return fmt.Errorf("key %q has zero value", key)
 	}
-	return nil
-}
-
-type Transaction uint8
-
-const (
-	TranUnset Transaction = iota
-	TranCheckout
-	TranReturn
-)
-
-func createTransaction(tran Transaction) error {
 	return nil
 }
