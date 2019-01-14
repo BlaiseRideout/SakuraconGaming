@@ -28,7 +28,7 @@ func GetGames() ([]Game, error) {
 	return games, nil
 }
 
-func CreateGame(name, consoleID int, count int) error {
+func CreateGame(name string, consoleID int, count int) error {
 	_, err := db.Exec(`INSERT INTO Games (Name, ConsoleID, Count) VALUES (?, ?, ?)`, name, consoleID, count)
 	if err != nil {
 		return err
@@ -44,7 +44,7 @@ func DeleteGame(ID int) error {
 	return nil
 }
 
-func UpdateGame(ID int, name, consoleID int, count int) error {
+func UpdateGame(ID int, name string, consoleID int, count int) error {
 	_, err := db.Exec(`UPDATE Games SET Name = ?, ConsoleID = ?, Count = ? WHERE ID = ?`, name, consoleID, count, ID)
 	if err != nil {
 		return err

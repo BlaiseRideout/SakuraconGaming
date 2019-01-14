@@ -28,7 +28,7 @@ func GetConsoles() ([]Console, error) {
 }
 
 func CreateConsole(name, imagePath string) error {
-	_, err := db.Exec(`INSERT INTO Consoles (Name, Image) VALUES (?, ?, ?)`, name, imagePath)
+	_, err := db.Exec(`INSERT INTO Consoles (Name, Image) VALUES (?, ?)`, name, imagePath)
 	if err != nil {
 		return err
 	}
