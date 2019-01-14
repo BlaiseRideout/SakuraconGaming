@@ -1,44 +1,65 @@
-CREATE TABLE IF NOT EXISTS stations(
-    id INTEGER PRIMARY KEY,
-    console_id INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS Consoles(
+    ID INTEGER PRIMARY KEY,
+    Name TEXT NOT NULL,
+    Image TEXT NOT NULL
+);
 
-CREATE TABLE IF NOT EXISTS consoles(
-    id INTEGER PRIMARY KEY,
-    name TEXT NOT NULL,
-    image TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS Stations(
+    ID INTEGER PRIMARY KEY,
+    ConsoleID INTEGER NOT NULL,
+    FOREIGN KEY(ConsoleID) REFERENCES Consoles(ID)
+);
 
-CREATE TABLE IF NOT EXISTS console_controllers(
-    id INTEGER PRIMARY KEY,
-    console_id INTEGER NOT NULL,
-    controller_id INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS Controllers(
+    ID INTEGER PRIMARY KEY,
+    Name TEXT NOT NULL,
+    Image TEXT,
+    Count INTEGER NOT NULL
+);
 
-CREATE TABLE IF NOT EXISTS controllers(
-    id INTEGER PRIMARY KEY,
-    name TEXT NOT NULL,
-    image TEXT,
-    count INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS ConsoleControllers(
+    ID INTEGER PRIMARY KEY,
+    ConsoleID INTEGER NOT NULL,
+    ControllerID INTEGER NOT NULL,
 
-CREATE TABLE IF NOT EXISTS games(
-    id INTEGER PRIMARY KEY,
-    name TEXT NOT NULL,
-    count INTEGER NOT NULL);
+    FOREIGN KEY(ConsoleID) REFERENCES Consoles(ID),
+    FOREIGN KEY(ControllerID) REFERENCES Controllers(ID)
+);
 
-CREATE TABLE IF NOT EXISTS barcodes(
-    id INTEGER PRIMARY KEY,
-    game_id INTEGER NOT NULL,
-    barcode TEXT NOT NULL);
 
-CREATE TABLE IF NOT EXISTS rentals(
-    id INTEGER PRIMARY KEY,
-    badge_id INTEGER NOT NULL,
-    controller_id INTEGER,
-    game_id INTEGER);
+CREATE TABLE IF NOT EXISTS Games(
+    ID INTEGER PRIMARY KEY,
+    Name TEXT NOT NULL,
+    ConsoleID INTEGER NOT NULL,
+    Count INTEGER NOT NULL,
 
-CREATE TABLE IF NOT EXISTS transactions(
-    id INTEGER PRIMARY KEY,
-    type TEXT NOT NULL,
-    badge_id INTEGER,
-    station_id INTEGER,
-    game_id INTEGER,
-    controller_id INTEGER,
-    created TEXT DEFAULT now());
+    FOREIGN KEY(ConsoleID) REFERENCES Consoles(ID)
+);
+
+CREATE TABLE IF NOT EXISTS Barcodes(
+    ID INTEGER PRIMARY KEY,
+    GameID INTEGER NOT NULL,
+    Barcode TEXT NOT NULL,
+
+    FOREIGN KEY(GameID) REFERENCES Games(ID)
+);
+
+CREATE TABLE IF NOT EXISTS Rentals(
+    ID INTEGER PRIMARY KEY,
+    BadgeID INTEGER NOT NULL,
+    ControllerID INTEGER,
+    GameID INTEGER,
+
+    FOREIGN KEY(GameID) REFERENCES Games(ID),
+    FOREIGN KEY(ControllerID) REFERENCES Controllers(ID)
+);
+
+CREATE TABLE IF NOT EXISTS Transactions(
+    ID INTEGER PRIMARY KEY,
+    Type TEXT NOT NULL,
+    BadgeID INTEGER,
+    StationID INTEGER,
+    GameID INTEGER,
+    ControllerID INTEGER,
+    Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
