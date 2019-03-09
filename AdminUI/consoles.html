@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Consoles</title>
+    <link rel="stylesheet" type="text/css" href="consoles.css" />
+  </head>
+  <body>
+    <a href="index.html">Main Menu</a>
+    <div id="console-list">
+    </div>
+    <form id="new-console-type" type="multipart/formdata">
+      <h2>New Console Type</h2>
+      <label for="console-name-field">Name</label>
+      <input type="text" name="Name" id="console-name-field" placeholder="Name" /><br />
+      <label for="console-image-field">Image</label>
+      <input type="file" name="Image" id="console-image-field" /><br />
+      <input type="submit" value="Add Console Type" />
+    </form>
+    <script>
+      require('./consoles.js');
+    </script>
+  </body>
+</html>

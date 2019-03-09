@@ -1,0 +1,20 @@
+{{#Consoles}}
+<div class="console" data-consoleId="{{ID}}">
+  <div class="header">
+    <span class="name">{{Name}}</span>
+    <button class="delete">X</button>
+  </div>
+  <img src="{{Image}}" />
+  <div class="controllers">
+  </div>
+  <div class="console-controller-list">
+    {{#ConsoleControllers}}
+    <span class="console-controller" data-consoleControllerId="{{ID}}">
+      <span class="name">{{ControllerName}}</span>
+      <button class="delete-console-controller">X</button>
+    </span>
+    {{/ConsoleControllers}}
+  </div>
+  <select class="controller-select"></select><button class="add-controller-type">+</button>
+</div>
+{{/Consoles}}

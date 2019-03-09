@@ -1,0 +1,12 @@
+{{#Controllers}}
+<div class="controller" data-controllerId="{{ID}}">
+  <div class="header">
+    <span class="name">{{Name}}</span>
+    <span class="count-box">
+      <span class="count">{{Count}}</span>
+      <button class="inc-count">+</button> / <button class="dec-count">-</button>
+    </span>
+  </div>
+  <img src="{{Image}}" />
+</div>
+{{/Controllers}}

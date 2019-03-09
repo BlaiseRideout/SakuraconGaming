@@ -1,0 +1,22 @@
+{
+  "name": "SakuraconGaming",
+  "version": "0.1.0",
+  "description": "Software for managing Sakura-con's console gaming checkout system.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": "https://github.com/BlaiseRitchie/SakuraconGaming",
+  "keywords": [
+    "Electron",
+    "gaming"
+  ],
+  "author": "BlaiseRitchie",
+  "license": "",
+  "devDependencies": {
+    "electron": "^4.0.8",
+    "jquery": "^3.3.1",
+    "mustache": "^3.0.1",
+    "node-fetch": "^2.3.0"
+  }
+}

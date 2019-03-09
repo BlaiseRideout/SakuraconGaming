@@ -1,0 +1,29 @@
+.controller {
+  display:inline-block;
+  border: 1px solid;
+  width: 250px;
+}
+
+.controller .name {
+  font-size: 1.2em;
+}
+
+.controller .name, .controller .count-box {
+  display:inline-block;
+  width:49%;
+  text-align: center;
+}
+
+.controller .count {
+  width:2em;
+}
+
+.controller .header {
+  border-bottom: 1px solid;
+}
+
+.controller img {
+  display:block;
+  width: 250px;
+  height:250px;
+}

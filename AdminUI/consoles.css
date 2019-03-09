@@ -1,0 +1,39 @@
+
+.console {
+  display:inline-block;
+  border: 1px solid;
+  width: 250px;
+  position:relative;
+}
+
+.console .header {
+  border-bottom: 1px solid;
+}
+
+.console .name {
+  display:inline-block;
+  font-size: 1.2em;
+  width:calc(100% - 2em);
+  text-align: center;
+}
+
+.console .delete {
+  display:inline-block;
+  width:2em;
+  float: right;
+}
+
+.console img {
+  display:block;
+  width: 250px;
+  height:250px;
+}
+
+.console .controller-select {
+  width:calc(100% - 2em);
+}
+
+.console .add-controller-type {
+  width:2em;
+  float: right;
+}

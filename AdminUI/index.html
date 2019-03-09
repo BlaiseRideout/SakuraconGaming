@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Index</title>
+  </head>
+  <body>
+    <h1>Index</h1>
+    <div id="debug-info" style="display:none;">
+      <h2>Debug Info</h2>
+      <!-- All of the Node.js APIs are available in this renderer process. -->
+      We are using Node.js <script>document.write(process.versions.node)</script>,
+      Chromium <script>document.write(process.versions.chrome)</script>,
+      and Electron <script>document.write(process.versions.electron)</script>.
+
+      Using config: <span id="config"></span>
+    </div>
+
+    <div id="tools">
+      <h2>Tools</h2>
+      <a href="controllers.html">Manage Controllers</a><br />
+      <a href="consoles.html">Manage Consoles</a>
+    </div>
+
+    <script>
+      // You can also require other files to run in this process
+      require('./index.js');
+    </script>
+  </body>
+</html>

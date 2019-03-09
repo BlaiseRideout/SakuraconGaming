@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Controllers</title>
+    <link rel="stylesheet" type="text/css" href="controllers.css" />
+  </head>
+  <body>
+    <a href="index.html">Main Menu</a>
+    <div id="controller-list">
+    </div>
+    <form id="new-controller-type" type="multipart/formdata">
+      <h2>New Controller Type</h2>
+      <label for="controller-name-field">Name</label>
+      <input type="text" name="Name" id="controller-name-field" placeholder="Name" /><br />
+      <label for="controller-image-field">Image</label>
+      <input type="file" name="Image" id="controller-image-field" /><br />
+      <input type="submit" value="Add Controller Type" />
+    </form>
+    <script>
+      require('./controllers.js');
+    </script>
+  </body>
+</html>
