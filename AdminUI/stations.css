@@ -1,0 +1,43 @@
+#stations {
+  position:absolute;
+}
+
+.station {
+  display:inline-block;
+  border: 1px solid;
+  width: 250px;
+  position:absolute;
+}
+
+.station .header {
+  border-bottom: 1px solid;
+}
+
+.station .id {
+  display:inline-block;
+  font-size: 1.2em;
+  width:calc(100% - 2em);
+  text-align: center;
+}
+
+.station .delete {
+  display:inline-block;
+  width:2em;
+  float: right;
+}
+
+.station img {
+  display:block;
+  width: 250px;
+  height:250px;
+}
+
+.station .console-select {
+  width:calc(100%);
+}
+
+#create-station {
+  position: absolute;
+  bottom: 0;
+  left:0;
+}

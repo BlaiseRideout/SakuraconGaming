@@ -3,7 +3,7 @@ const config = require('./config');
 const $ = require('jquery');
 const fs = require('fs');
 const mustache = require('mustache');
-const { ListControllerTypes } = require('./api');
+const { ListControllerTypes, ListConsoles } = require('./api');
 
 /*
  * if dialogs get fixed
@@ -62,11 +62,55 @@ exports.EditField = function(field, cb) {
   $(newElem).focusout(Finish);
 };
 
+exports.Draggable = function(elemSelector, draggedCb, handleSelector) {
+  const handle = (handleSelector === undefined)?
+                      $(elemSelector):
+                      $(elemSelector).find(handleSelector);
+  handle.unbind('mousedown');
+  handle.mousedown(function(downEvent) {
+    var prevX;
+    var prevY;
+    const curElem = (handleSelector === undefined)?
+                      $(this):
+                      $(this).parents(elemSelector);
+    curElem.mousemove(function(moveEvent) {
+      moveEvent.preventDefault();
+      const newX = moveEvent.clientX;
+      const newY = moveEvent.clientY;
+      const prevOffset = curElem.offset();
+      if(prevX !== undefined && prevY !== undefined){
+        curElem.offset({
+          "left": prevOffset["left"] + newX - prevX,
+          "top":  prevOffset["top"]  + newY - prevY
+        });
+      }
+      prevX = newX;
+      prevY = newY;
+    });
+    const stop = function() {
+      curElem.unbind('mouseup');
+      curElem.unbind('mousemove');
+      draggedCb(curElem);
+    };
+    curElem.mouseleave(stop);
+    curElem.mouseup(stop);
+  });
+};
+
 exports.FillControllerSelects = function() {
   exports.RenderTemplate('./mustache/controllerselect.mst',
     {'Controllers':ListControllerTypes()},
     (html) => {
       $(".controller-select").html(html);
+    }
+  );
+};
+
+exports.FillConsoleSelects = function() {
+  exports.RenderTemplate('./mustache/consoleselect.mst',
+    {'Consoles':ListConsoles()},
+    (html) => {
+      $(".console-select").html(html);
     }
   );
 };

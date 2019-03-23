@@ -122,7 +122,7 @@ exports.ChangeConsole = function(id, data) {
 exports.DeleteConsole = function(id) {
   if(config.dummyData)
     return [ ];
-  return RequestObject('admin/consoles', 'DELETE', {"ID": data});
+  return RequestObject('admin/consoles', 'DELETE', {"ID": id});
 }
 
 /////////////////////////////////
@@ -159,3 +159,36 @@ exports.ListStations = function() {
     ];
   return RequestObject('admin/stations');
 }
+
+exports.CreateStation = function(data) {
+  if(config.dummyData)
+    return [
+      {
+        "ID": 0,
+        "ConsoleID":0,
+        "X":0,
+        "Y":0
+      }
+    ];
+  return RequestObject('admin/stations', 'POST', data);
+}
+
+exports.ChangeStation = function(id, data) {
+  if(config.dummyData)
+    return [
+      {
+        "ID": 0,
+        "ConsoleID":0,
+        "X":0,
+        "Y":0
+      }
+    ];
+  return RequestObject('admin/stations/' + id, 'POST', data);
+}
+
+exports.DeleteStation = function(id) {
+  if(config.dummyData)
+    return [ ];
+  return RequestObject('admin/stations', 'DELETE', {"ID": id});
+}
+

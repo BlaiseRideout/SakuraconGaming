@@ -8,12 +8,12 @@
   <div class="controllers">
   </div>
   <div class="console-controller-list">
-    {{#ConsoleControllers}}
+    {{#Controllers}}
     <span class="console-controller" data-consoleControllerId="{{ID}}">
-      <span class="name">{{ControllerName}}</span>
+      <span class="name">{{Name}}</span>
       <button class="delete-console-controller">X</button>
     </span>
-    {{/ConsoleControllers}}
+    {{/Controllers}}
   </div>
   <select class="controller-select"></select><button class="add-controller-type">+</button>
 </div>

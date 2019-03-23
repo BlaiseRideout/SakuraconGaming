@@ -1,0 +1,10 @@
+{{#Stations}}
+<div class="station" data-id="{{ID}}"{{#X}} data-x="{{X}}"{{/X}}{{#Y}} data-y="{{Y}}"{{/Y}}>
+  <div class="header">
+    <span class="ID">{{ID}}</span>
+    <button class="delete">X</button>
+  </div>
+  <img src="{{Image}}" />
+  <select{{#ConsoleID}} data-console="{{ConsoleID}}"{{/ConsoleID}} class="console-select"></select>
+</div>
+{{/Stations}}

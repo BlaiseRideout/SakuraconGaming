@@ -1,0 +1,4 @@
+<option value="SelectName">Console Types</option>
+{{#Consoles}}
+<option value="{{ID}}">{{Name}}</option>
+{{/Consoles}}
