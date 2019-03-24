@@ -12,7 +12,8 @@ var RefreshCallbacks;
 RefreshCallbacks = function() {
   function UpdateCount(count, newCount){
     const controller = $(count).parents(".controller");
-    const controllerId = controller.data("controllerId");
+    const name = controller.find(".name").text();
+    const controllerId = controller.data("id");
     if(newCount > 0) {
       ChangeController(
         controllerId,
@@ -20,7 +21,7 @@ RefreshCallbacks = function() {
       );
       $(count).text(newCount);
     }
-    else if(confirm("Do you want to remove this controller type?")) {
+    else if(confirm("Do you want to remove \"" + name + "\"?")) {
       DeleteController(controllerId);
       RefreshList();
     }

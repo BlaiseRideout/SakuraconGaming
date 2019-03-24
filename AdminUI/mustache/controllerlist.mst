@@ -1,5 +1,5 @@
 {{#Controllers}}
-<div class="controller" data-controllerId="{{ID}}">
+<div class="controller" data-id="{{ID}}">
   <div class="header">
     <span class="name">{{Name}}</span>
     <span class="count-box">
