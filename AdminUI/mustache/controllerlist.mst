@@ -7,6 +7,6 @@
       <button class="inc-count">+</button> / <button class="dec-count">-</button>
     </span>
   </div>
-  <img src="{{Image}}" />
+  <img src="{{baseURL}}{{Image}}" />
 </div>
 {{/Controllers}}

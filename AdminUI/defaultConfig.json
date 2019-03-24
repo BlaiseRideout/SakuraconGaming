@@ -1,8 +1,8 @@
 {
   "_comments":"Any fields with a preceding _ will be ignored.",
 
-  "_baseURL":"Includes protocol and trailing /",
-  "baseURL":"http://127.0.0.1:8080/",
+  "_baseURL":"Includes protocol and no trailing /",
+  "baseURL":"http://127.0.0.1:8080",
 
   "debug":false,
 

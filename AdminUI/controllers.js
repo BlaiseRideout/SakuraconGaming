@@ -59,7 +59,10 @@ RefreshList = function() {
     if(typeof(controllers) === "object" && controllers.length > 0)
       RenderTemplate(
         './mustache/controllerlist.mst',
-        {'Controllers':controllers},
+        {
+          'Controllers':controllers,
+          'baseURL': config.baseURL,
+        },
         (html) => {
           $('#controller-list').html(html);
           RefreshCallbacks();

@@ -4,7 +4,7 @@ const fetch = require('node-fetch');
 const FormData = require('form-data');
 
 async function RequestObject(endpoint, method, data) {
-  const fullEndpoint = config.baseURL + endpoint;
+  const fullEndpoint = config.baseURL + "/" + endpoint;
   if(method === undefined)
     method = 'GET';
 

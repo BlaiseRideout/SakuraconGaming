@@ -54,7 +54,10 @@ RefreshList = function() {
     if(typeof(stations) === "object" && stations.length > 0)
       RenderTemplate(
         './mustache/stations.mst',
-        {'Stations':stations},
+        {
+          'Stations':stations,
+          'baseURL': config.baseURL,
+        },
         (html) => {
           $('#stations').html(html);
           FillConsoleSelects();

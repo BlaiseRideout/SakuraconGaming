@@ -60,7 +60,10 @@ RefreshList = function() {
     if(typeof(consoles) === "object" && consoles.length > 0)
       RenderTemplate(
         './mustache/consolelist.mst',
-        {'Consoles':consoles},
+        {
+          'Consoles': consoles,
+          'baseURL': config.baseURL,
+        },
         (html) => {
           $('#console-list').html(html);
           RefreshCallbacks();

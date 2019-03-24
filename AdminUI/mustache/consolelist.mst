@@ -4,7 +4,7 @@
     <span class="name">{{Name}}</span>
     <button class="delete">X</button>
   </div>
-  <img src="{{Image}}" />
+  <img src="{{baseURL}}{{Image}}" />
   <div class="controllers">
   </div>
   <div class="console-controller-list">
