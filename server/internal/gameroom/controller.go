@@ -1,7 +1,7 @@
 package gameroom
 
 type Controller struct {
-	ID    int
+	ID    int64
 	Name  string
 	Image string
 	Count int

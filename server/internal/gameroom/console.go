@@ -1,30 +1,56 @@
 package gameroom
 
+import (
+	"database/sql"
+)
+
 type Console struct {
-	ID    int
-	Name  string
-	Image string
+	ID          int64
+	Name        string
+	Image       string
+	Controllers []Controller
 }
 
 func GetConsoles() ([]Console, error) {
-	rows, err := db.Query(`SELECT ID, Name, Image from Consoles`)
+	rows, err := db.Query(
+		`SELECT Consoles.ID, Consoles.Name, Consoles.Image, NULL,           NULL             FROM Consoles UNION
+		 SELECT Consoles.ID, Consoles.Name, Consoles.Image, Controllers.ID, Controllers.Name FROM Consoles
+		 INNER JOIN ConsoleControllers ON Consoles.ID = ConsoleControllers.ConsoleID
+		 INNER JOIN Controllers ON Controllers.ID = ConsoleControllers.ControllerID;`)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	consoles := make([]Console, 0)
+	consoles := make(map[int64]Console, 0)
 	for rows.Next() {
-		var s Console
-		err := rows.Scan(&s.ID, &s.Name, &s.Image)
+		var console Console
+		var controllerID sql.NullInt64
+		var controllerName sql.NullString
+		err := rows.Scan(&console.ID, &console.Name, &console.Image, &controllerID, &controllerName)
 		if err != nil {
 			return nil, err
 		}
-		consoles = append(consoles, s)
+		if controllerID.Valid && controllerName.Valid {
+			console.Controllers = make([]Controller, 1)
+			console.Controllers[0].ID = controllerID.Int64
+			console.Controllers[0].Name = controllerName.String
+			existingConsole, exists := consoles[console.ID]
+			if exists {
+				console.Controllers = append(existingConsole.Controllers, console.Controllers...)
+			}
+		}
+		consoles[console.ID] = console
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
-	return consoles, nil
+	consolesArr := make([]Console, len(consoles))
+	idx := 0
+	for _, value := range consoles {
+		consolesArr[idx] = value
+		idx++
+	}
+	return consolesArr, nil
 }
 
 func CreateConsole(name, imagePath string) error {
