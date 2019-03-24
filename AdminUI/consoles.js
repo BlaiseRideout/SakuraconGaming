@@ -21,8 +21,10 @@ RefreshCallbacks = function() {
     const console = $(this).parents(".console");
     const name = console.find(".name").text();
     const consoleId = console.data("id");
-    if(confirm("Are you sure you want to delete \"" + name + "\"?"))
+    if(confirm("Are you sure you want to delete \"" + name + "\"?")){
       DeleteConsole(consoleId);
+      RefreshList();
+    }
   });
   $(".console .name").click(function() {
     EditField(this, function(name) {
