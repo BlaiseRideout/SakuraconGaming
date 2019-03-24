@@ -3,25 +3,36 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
+	"os"
 	"reflect"
 	"strconv"
+	"strings"
 
 	"github.com/BlaiseRitchie/SakuraconGaming/server/internal/gameroom"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
-	"github.com/rs/cors"
 	"github.com/spf13/viper"
 )
 
 func main() {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	viper.AutomaticEnv()
 	viper.SetDefault("port", "8080")
 	port := viper.GetString("port")
 
-	router := mux.NewRouter()
-	handler := cors.Default().Handler(router)
+	router := mux.NewRouter().StrictSlash(true)
+	handler := handlers.CORS()(router)
+	handler = handlers.LoggingHandler(os.Stdout, handler)
+
+	handler = handlers.RecoveryHandler()(handler)
+
+	imagePath := "/images/"
+	s := http.StripPrefix(imagePath, http.FileServer(http.Dir("."+imagePath)))
+	router.PathPrefix(imagePath).Handler(s)
 
 	// TODO: break all this out into package
 	// Stations
@@ -102,6 +113,7 @@ func main() {
 
 	// Consoles
 	router.HandleFunc("/admin/consoles", func(w http.ResponseWriter, r *http.Request) {
+		var err error
 		defer r.Body.Close()
 		switch r.Method {
 		case http.MethodGet:
@@ -119,17 +131,11 @@ func main() {
 			}
 		case http.MethodPost:
 			var args gameroom.Console
-			err := json.NewDecoder(r.Body).Decode(&args)
+			args.Name, args.Image, err = acceptImage(r, "/images/consoles/")
 			if err != nil {
 				respondErr(w, err)
 				return
 			}
-			err = validateNonZero(args)
-			if err != nil {
-				respondErr(w, err)
-				return
-			}
-			// TODO: deal with images
 			err = gameroom.CreateConsole(args.Name, args.Image)
 			if err != nil {
 				respondErr(w, err)
@@ -141,7 +147,6 @@ func main() {
 	router.HandleFunc("/admin/consoles/{id}", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ID, err := strconv.Atoi(vars["id"])
-
 		if err != nil {
 			respondErr(w, err)
 			return
@@ -156,17 +161,11 @@ func main() {
 			fmt.Fprint(w, "ok")
 		case http.MethodPut:
 			var args gameroom.Console
-			err := json.NewDecoder(r.Body).Decode(&args)
+			args.Name, args.Image, err = acceptImage(r, "/images/consoles/")
 			if err != nil {
 				respondErr(w, err)
 				return
 			}
-			err = validateNonZero(args)
-			if err != nil {
-				respondErr(w, err)
-				return
-			}
-			// TODO: deal with images
 			err = gameroom.UpdateConsole(ID, args.Name, args.Image)
 			if err != nil {
 				respondErr(w, err)
@@ -179,6 +178,7 @@ func main() {
 
 	// Controllers
 	router.HandleFunc("/admin/controllers", func(w http.ResponseWriter, r *http.Request) {
+		var err error
 		defer r.Body.Close()
 		switch r.Method {
 		case http.MethodGet:
@@ -196,17 +196,11 @@ func main() {
 			}
 		case http.MethodPost:
 			var args gameroom.Controller
-			err := json.NewDecoder(r.Body).Decode(&args)
+			args.Name, args.Image, err = acceptImage(r, "/images/controllers/")
 			if err != nil {
 				respondErr(w, err)
 				return
 			}
-			err = validateNonZero(args)
-			if err != nil {
-				respondErr(w, err)
-				return
-			}
-			// TODO: deal with images
 			err = gameroom.CreateController(args.Name, args.Image, args.Count)
 			if err != nil {
 				respondErr(w, err)
@@ -233,17 +227,11 @@ func main() {
 			fmt.Fprint(w, "ok")
 		case http.MethodPut:
 			var args gameroom.Controller
-			err := json.NewDecoder(r.Body).Decode(&args)
+			args.Name, args.Image, err = acceptImage(r, "/images/controllers/")
 			if err != nil {
 				respondErr(w, err)
 				return
 			}
-			err = validateNonZero(args)
-			if err != nil {
-				respondErr(w, err)
-				return
-			}
-			// TODO: deal with images
 			err = gameroom.UpdateController(ID, args.Name, args.Image, args.Count)
 			if err != nil {
 				respondErr(w, err)
@@ -659,4 +647,27 @@ func mustInt(key string, val int) error {
 		return fmt.Errorf("key %q has zero value", key)
 	}
 	return nil
+}
+
+func acceptImage(r *http.Request, imagePathPrefix string) (string, string, error) {
+	if !(strings.HasPrefix(imagePathPrefix, "/") && strings.HasSuffix(imagePathPrefix, "/")) {
+		return "", "", errors.New("imagePathPrefix must start and end with '/'")
+	}
+	r.ParseMultipartForm(32 << 20)
+	file, handler, err := r.FormFile("Image")
+	if err != nil {
+		return "", "", err
+	}
+	defer file.Close()
+
+	imagePath := imagePathPrefix + handler.Filename
+
+	f, err := os.OpenFile("."+imagePath, os.O_WRONLY|os.O_CREATE, 0666)
+	if err != nil {
+		log.Println(err)
+		return "", "", err
+	}
+	defer f.Close()
+	io.Copy(f, file)
+	return r.FormValue("Name"), imagePath, nil
 }
