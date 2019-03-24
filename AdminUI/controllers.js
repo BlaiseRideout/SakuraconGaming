@@ -2,6 +2,7 @@ const config = require('./config');
 const { RenderTemplate, EditField } = require('./util');
 const { ListControllerTypes, CreateController, ChangeController, DeleteController } = require('./api');
 const $ = require('jquery');
+const FormData = require('form-data');
 
 $(() => {
 
@@ -53,14 +54,20 @@ RefreshCallbacks = function() {
 }
 
 RefreshList = function() {
-  RenderTemplate(
-    './mustache/controllerlist.mst',
-    {'Controllers':ListControllerTypes()},
-    (html) => {
-      $('#controller-list').html(html);
-      RefreshCallbacks();
-    }
-  );
+  const controllers = ListControllerTypes();
+  if(typeof(controllers) === "object" && controllers.length > 0)
+    RenderTemplate(
+      './mustache/controllerlist.mst',
+      {'Controllers':controllers},
+      (html) => {
+        $('#controller-list').html(html);
+        RefreshCallbacks();
+      }
+    );
+  else {
+    $('#controller-list').html("<h1>No controllers</h1>");
+    RefreshCallbacks();
+  }
 }
 
 $("#new-controller-type").submit(function(e) {

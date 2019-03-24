@@ -9,6 +9,7 @@ const {
   DeleteConsoleController
 } = require('./api');
 const $ = require('jquery');
+const FormData = require('form-data');
 
 $(() => {
 
@@ -55,15 +56,22 @@ RefreshCallbacks = function() {
 }
 
 RefreshList = function() {
-  RenderTemplate(
-    './mustache/consolelist.mst',
-    {'Consoles':ListConsoles()},
-    (html) => {
-      $('#console-list').html(html);
-      RefreshCallbacks();
-      FillControllerSelects();
-    }
-  );
+  const consoles = ListConsoles();
+  if(typeof(consoles) === "object" && consoles.length > 0)
+    RenderTemplate(
+      './mustache/consolelist.mst',
+      {'Consoles':consoles},
+      (html) => {
+        $('#console-list').html(html);
+        RefreshCallbacks();
+        FillControllerSelects();
+      }
+    );
+  else {
+    $('#console-list').html("<h1>No consoles</h1>");
+    RefreshCallbacks();
+    FillControllerSelects();
+  }
 }
 
 $("#new-console-type").submit(function(e) {

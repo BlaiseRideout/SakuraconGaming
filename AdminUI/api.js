@@ -1,6 +1,7 @@
 const config = require('./config');
 
 const fetch = require('node-fetch');
+const FormData = require('form-data');
 
 async function RequestObject(endpoint, method, data) {
   const fullEndpoint = config.baseURL + endpoint;
@@ -9,12 +10,28 @@ async function RequestObject(endpoint, method, data) {
   if(method === undefined)
     method = 'GET';
 
-  const response = await fetch(fullEndpoint, {
+  var args = {
     'method': method,
-    'body': data
-  });
-  const json = await response.json();
-  return JSON.parse(json);
+  };
+
+  if(method !== 'GET')
+    args['body'] = data;
+  const response = await fetch(fullEndpoint, args);
+  const text = await response.text();
+  try {
+    const json = JSON.parse(text);
+    return json;
+  }
+  catch(err) {
+    var object = {};
+    if(data instanceof FormData)
+      data.forEach((value, key) => {object[key] = value});
+    else
+      object = data;
+
+    console.log("ERROR in", method, "to", endpoint, ":", "\"" + text + "\"", "with data:", object);
+    return null;
+  }
 }
 
 //////////////////////////
