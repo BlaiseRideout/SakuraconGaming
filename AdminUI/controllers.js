@@ -13,22 +13,23 @@ RefreshCallbacks = function() {
   function UpdateCount(count, newCount){
     const controller = $(count).parents(".controller");
     const controllerId = controller.data("controllerId");
-    $(count).text(newCount);
-    if(newCount === 0 && confirm("Do you want to remove this controller type?")){
-      DeleteController(controllerId);
-      RefreshList();
-    }
-    else
+    if(newCount > 0) {
       ChangeController(
         controllerId,
         {"Count": newCount}
       );
+      $(count).text(newCount);
+    }
+    else if(confirm("Do you want to remove this controller type?")) {
+      DeleteController(controllerId);
+      RefreshList();
+    }
   }
   function CountButton(className, valueAdd){
     $(className).click(function() {
       const controller = $(this).parents(".controller");
-      const newCount = Math.max(0, count.text() - -valueAdd);
       const count = controller.find(".count");
+      const newCount = Math.max(0, count.text() - -valueAdd);
       UpdateCount(count, newCount);
     });
   }
@@ -54,20 +55,21 @@ RefreshCallbacks = function() {
 }
 
 RefreshList = function() {
-  const controllers = ListControllerTypes();
-  if(typeof(controllers) === "object" && controllers.length > 0)
-    RenderTemplate(
-      './mustache/controllerlist.mst',
-      {'Controllers':controllers},
-      (html) => {
-        $('#controller-list').html(html);
-        RefreshCallbacks();
-      }
-    );
-  else {
-    $('#controller-list').html("<h1>No controllers</h1>");
-    RefreshCallbacks();
-  }
+  ListControllerTypes().then((controllers) => {
+    if(typeof(controllers) === "object" && controllers.length > 0)
+      RenderTemplate(
+        './mustache/controllerlist.mst',
+        {'Controllers':controllers},
+        (html) => {
+          $('#controller-list').html(html);
+          RefreshCallbacks();
+        }
+      );
+    else {
+      $('#controller-list').html("<h1>No controllers</h1>");
+      RefreshCallbacks();
+    }
+  });
 }
 
 $("#new-controller-type").submit(function(e) {

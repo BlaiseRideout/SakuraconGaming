@@ -5,8 +5,6 @@ const FormData = require('form-data');
 
 async function RequestObject(endpoint, method, data) {
   const fullEndpoint = config.baseURL + endpoint;
-  if(data === undefined)
-    data = {};
   if(method === undefined)
     method = 'GET';
 
@@ -14,7 +12,7 @@ async function RequestObject(endpoint, method, data) {
     'method': method,
   };
 
-  if(method !== 'GET')
+  if(method !== 'GET' && data !== undefined)
     args['body'] = data;
   const response = await fetch(fullEndpoint, args);
   const text = await response.text();

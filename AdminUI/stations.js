@@ -2,7 +2,7 @@ const config = require('./config');
 const { RenderTemplate, FillConsoleSelects, Draggable } = require('./util');
 const {
   ListStations,
-  AddStation,
+  CreateStation,
   ChangeStation,
   DeleteStation
 } = require('./api');
@@ -50,33 +50,34 @@ RefreshCallbacks = function() {
 }
 
 RefreshList = function() {
-  const stations = ListStations();
-  if(typeof(stations) === "object" && stations.length > 0)
-    RenderTemplate(
-      './mustache/stations.mst',
-      {'Stations':stations},
-      (html) => {
-        $('#stations').html(html);
-        FillConsoleSelects();
-        $(".station").each(function(i, station) {
-          const x = $(station).data("x");
-          const y = $(station).data("y");
-          if(x !== undefined)
-            $(station).css({"left":x});
-          if(y !== undefined)
-            $(station).css({"top":y});
-          const consoleSelect = $(station).find("console-select");
-          const console = consoleSelect.data("console");
-          if(console !== undefined)
-            consoleSelect.val(console);
-        });
-        RefreshCallbacks();
-      }
-    );
-  else {
-    $('#stations').html("<h1>No stations</h1>");
-    RefreshCallbacks();
-  }
+  ListStations().then((stations) => {
+    if(typeof(stations) === "object" && stations.length > 0)
+      RenderTemplate(
+        './mustache/stations.mst',
+        {'Stations':stations},
+        (html) => {
+          $('#stations').html(html);
+          FillConsoleSelects();
+          $(".station").each(function(i, station) {
+            const x = $(station).data("x");
+            const y = $(station).data("y");
+            if(x !== undefined)
+              $(station).css({"left":x});
+            if(y !== undefined)
+              $(station).css({"top":y});
+            const consoleSelect = $(station).find("console-select");
+            const console = consoleSelect.data("console");
+            if(console !== undefined)
+              consoleSelect.val(console);
+          });
+          RefreshCallbacks();
+        }
+      );
+    else {
+      $('#stations').html("<h1>No stations</h1>");
+      RefreshCallbacks();
+    }
+  });
 }
 
 $("#new-console-type").submit(function(e) {

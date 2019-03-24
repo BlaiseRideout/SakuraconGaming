@@ -56,22 +56,23 @@ RefreshCallbacks = function() {
 }
 
 RefreshList = function() {
-  const consoles = ListConsoles();
-  if(typeof(consoles) === "object" && consoles.length > 0)
-    RenderTemplate(
-      './mustache/consolelist.mst',
-      {'Consoles':consoles},
-      (html) => {
-        $('#console-list').html(html);
-        RefreshCallbacks();
-        FillControllerSelects();
-      }
-    );
-  else {
-    $('#console-list').html("<h1>No consoles</h1>");
-    RefreshCallbacks();
-    FillControllerSelects();
-  }
+  ListConsoles().then((consoles) => {
+    if(typeof(consoles) === "object" && consoles.length > 0)
+      RenderTemplate(
+        './mustache/consolelist.mst',
+        {'Consoles':consoles},
+        (html) => {
+          $('#console-list').html(html);
+          RefreshCallbacks();
+          FillControllerSelects();
+        }
+      );
+    else {
+      $('#console-list').html("<h1>No consoles</h1>");
+      RefreshCallbacks();
+      FillControllerSelects();
+    }
+  });
 }
 
 $("#new-console-type").submit(function(e) {
