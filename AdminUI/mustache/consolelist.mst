@@ -1,5 +1,5 @@
 {{#Consoles}}
-<div class="console" data-consoleId="{{ID}}">
+<div class="console" data-id="{{ID}}">
   <div class="header">
     <span class="name">{{Name}}</span>
     <button class="delete">X</button>

@@ -19,8 +19,8 @@ var RefreshCallbacks;
 RefreshCallbacks = function() {
   $(".console .delete").click(function() {
     const console = $(this).parents(".console");
-    const name = $(console).find(".name").text();
-    const consoleId = console.data("consoleId");
+    const name = console.find(".name").text();
+    const consoleId = console.data("id");
     if(confirm("Are you sure you want to delete \"" + name + "\"?"))
       DeleteConsole(consoleId);
   });
