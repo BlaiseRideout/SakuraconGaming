@@ -82,7 +82,7 @@ exports.ChangeController = function(id, data) {
 exports.DeleteController = function(id) {
   if(config.dummyData)
     return [];
-  return RequestObject('admin/controllers', 'DELETE', {"ID":id});
+  return RequestObject('admin/controllers/' + id, 'DELETE');
 }
 
 ///////////////////////
@@ -137,7 +137,7 @@ exports.ChangeConsole = function(id, data) {
 exports.DeleteConsole = function(id) {
   if(config.dummyData)
     return [ ];
-  return RequestObject('admin/consoles', 'DELETE', {"ID": id});
+  return RequestObject('admin/consoles/' + id, 'DELETE');
 }
 
 /////////////////////////////////
@@ -204,6 +204,6 @@ exports.ChangeStation = function(id, data) {
 exports.DeleteStation = function(id) {
   if(config.dummyData)
     return [ ];
-  return RequestObject('admin/stations', 'DELETE', {"ID": id});
+  return RequestObject('admin/stations/' + id, 'DELETE');
 }
 
